@@ -66,7 +66,7 @@ public class NaivelyConcurrentTotalFileSize {
 
     private long getTotalSizeOfFile(final String fileName)
             throws InterruptedException, ExecutionException, TimeoutException {
-        final int poolSize = 4;
+        final int poolSize = 100;
         System.out.println("Folder: " + fileName);
         System.out.println("Pool Size: " + poolSize);
         final ExecutorService service = Executors.newFixedThreadPool(poolSize);

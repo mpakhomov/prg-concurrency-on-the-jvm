@@ -22,12 +22,21 @@ import java.util.Collections;
 
 public class ConcurrentTotalFileSize {
     class SubDirectoriesAndSize {
+        // MP: I added filePath filed for information purpose. I want to know
+        // what directory this class contains info for
+        final private String filePath;
         final public long size;
         final public List<File> subDirectories;
 
-        public SubDirectoriesAndSize(final long totalSize, final List<File> theSubDirs) {
+        public SubDirectoriesAndSize(final String filePath, final long totalSize, final List<File> theSubDirs) {
+            this.filePath = filePath;
             size = totalSize;
             subDirectories = Collections.unmodifiableList(theSubDirs);
+        }
+
+        @Override
+        public String toString() {
+            return filePath;
         }
     }
 
@@ -45,17 +54,20 @@ public class ConcurrentTotalFileSize {
                     }
                 }
         }
-        return new SubDirectoriesAndSize(total, subDirectories);
+        return new SubDirectoriesAndSize(file.toString(), total, subDirectories);
     }
 
     private long getTotalSizeOfFilesInDir(final File file)
             throws InterruptedException, ExecutionException, TimeoutException {
         final ExecutorService service = Executors.newFixedThreadPool(100);
+        List<SubDirectoriesAndSize> processedFiles = new ArrayList<>();
         try {
             long total = 0;
             final List<File> directories = new ArrayList<File>();
             directories.add(file);
+            int depth = 0;
             while (!directories.isEmpty()) {
+                depth++;
                 final List<Future<SubDirectoriesAndSize>> partialResults =
                         new ArrayList<Future<SubDirectoriesAndSize>>();
                 for (final File directory : directories) {
@@ -67,15 +79,19 @@ public class ConcurrentTotalFileSize {
                             }));
                 }
                 directories.clear();
+                processedFiles.clear();
                 for (final Future<SubDirectoriesAndSize> partialResultFuture :
                         partialResults) {
                     final SubDirectoriesAndSize subDirectoriesAndSize =
                             partialResultFuture.get(100, TimeUnit.SECONDS);
                     directories.addAll(subDirectoriesAndSize.subDirectories);
-                    System.out.println(subDirectoriesAndSize.subDirectories);
+                    processedFiles.add(subDirectoriesAndSize);
+//                    System.out.println(subDirectoriesAndSize.subDirectories);
                     total += subDirectoriesAndSize.size;
                 }
             }
+            System.out.println("Maximum depth = " + depth);
+            System.out.println(processedFiles);
             return total;
         } finally {
             service.shutdown();
