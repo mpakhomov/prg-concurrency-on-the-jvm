@@ -26,6 +26,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.multiverse</groupId>
+            <artifactId>multiverse-core</artifactId>
+            <version>0.7.0</version>
+        </dependency>
+
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
