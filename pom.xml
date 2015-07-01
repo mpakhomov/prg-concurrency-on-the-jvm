@@ -15,6 +15,7 @@
         <module>scalability-and-thread-safety</module>
         <module>shared-mutability</module>
         <module>using-transactional-memory</module>
+	<module>actors</module>
     </modules>
 
     <build>
