@@ -90,8 +90,8 @@ public class ConcurrentTotalFileSize {
                     total += subDirectoriesAndSize.size;
                 }
             }
-            System.out.println("Maximum depth = " + depth);
-            System.out.println(processedFiles);
+//            System.out.println("Maximum depth = " + depth);
+//            System.out.println(processedFiles);
             return total;
         } finally {
             service.shutdown();
